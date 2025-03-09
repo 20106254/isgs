@@ -26,21 +26,21 @@ if (any(data_numeric < 0)) {
   data_numeric[data_numeric < 0] <- 0  
 }
 
-data_scaled <- scale(data_numeric) 
+#data_scaled <- scale(data_numeric) 
 
-if (any(data_scaled < 0)) {
-  warning("The scaled dataset contains negative values.")
-}
+#if (any(data_scaled < 0)) {
+#  warning("The scaled dataset contains negative values.")
+#}
 
-dissimilarity_matrix <- vegdist(data_scaled, method = "bray")
+dissimilarity_matrix <- vegdist(data_numeric, method = "bray", memb.exp = 1.1, max_iterations = 10000)
 
-fanny_result <- fanny(dissimilarity_matrix, k = 3)  
+fanny_result <- fanny(dissimilarity_matrix, k = 3, memb.exp = 1.1)  
 
 data_wide$FANNY_Cluster <- fanny_result$clustering
 
 plot(fanny_result, main = "FANNY Clustering Membership")
 
-nmds_result <- metaMDS(data_scaled, distance = "bray", k = 2, trymax = 20)
+nmds_result <- metaMDS(data_numeric, distance = "bray", k = 2, trymax = 20)
 
 nmds_points <- data.frame(nmds_result$points)
 nmds_points$Site <- data_wide$SITE_ID  
@@ -49,6 +49,7 @@ nmds_points$FANNY_Cluster <- as.factor(data_wide$FANNY_Cluster)
 p <- ggplot(nmds_points, aes(x = MDS1, y = MDS2, color = FANNY_Cluster, label = Site)) +
   geom_point(size = 0.25) +
   ggtitle("NMDS Ordination with FANNY Clustering") +
+  geom_text(aes(label = Site), hjust = 1.5, vjust = 1.5, size = 3) +
   custom_theme +
   theme(axis.title = element_blank(), axis.text = element_blank(), axis.ticks = element_blank()) 
 
