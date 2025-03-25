@@ -6,7 +6,7 @@ library(cluster)
 source("save_plot.R")
 source("custom_theme.R")
 
-data <- read.csv("RELEVE_SP_DATA.txt")
+data <- read.csv("output.csv")
 
 data_clean <- data %>%
   select(-ID, -RELEVE_ID) 
